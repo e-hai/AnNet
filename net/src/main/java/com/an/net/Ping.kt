@@ -30,7 +30,7 @@ object Ping {
     private fun parseRtt(line: String, pingInfo: PingInfo) {
         val startIndex = line.indexOf("=")
         val endIndex = line.indexOf("ms")
-        line.substring(startIndex, endIndex)
+        line.substring(startIndex + 1, endIndex)
             .split("/")
             .forEachIndexed { index, s ->
                 when (index) {

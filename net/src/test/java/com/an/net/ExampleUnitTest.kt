@@ -1,5 +1,7 @@
 package com.an.net
 
+import com.an.net.util.DataUnit
+import com.an.net.util.byteToMBit
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +14,12 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        val data = (-1.0).apply {
+            println(this.byteToMBit())
+        }
+
+        DataUnit.networkSpeedRange(data).apply {
+            println(this)
+        }
     }
 }

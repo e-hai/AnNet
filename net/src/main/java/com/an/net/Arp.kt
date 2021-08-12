@@ -73,9 +73,10 @@ object Arp {
 
     private fun getArpTableFromFile(): List<String> {
         try {
-            return File("/proc/net/arp").inputStream().readStreamAsList().onEach {
-                Log.e(TAG, "arp file = $it")
-            }
+            return File("/proc/net/arp").inputStream().readStreamAsList()
+                .onEach {
+                    Log.e(TAG, "arp file = $it")
+                }
         } catch (e: Exception) {
             e.printStackTrace()
         }
