@@ -47,8 +47,8 @@ object AliOssManager {
     fun testUploadSpeed(
         context: Context,
         objectName: String,
-        fileSize: Long = 300 * 1024 * 1024,
-        interval: Long = 500,  //间隔时间 ms
+        fileSize: Long = 300 * 1024 * 1024,//上传文件大小 Byte
+        interval: Long = 500,       //间隔时间 ms
         duration: Long = 15 * 1000, //最长时间 ms
         callBack: SpeedCallBack
     ) {

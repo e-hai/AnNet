@@ -74,15 +74,15 @@ object DataUnit {
     /**
      * @param mbps 字节每秒
      * */
-    fun networkSpeedRange(
+    fun networkSpeedVideoLevel(
         mbps: Double,
-        mbpsList: List<SpeedRangeWithTitle> = listOf(
-            SpeedRangeWithTitle(1.92, "标清"),
-            SpeedRangeWithTitle(2.56, "高清"),
-            SpeedRangeWithTitle(8.0, "超清"),
-            SpeedRangeWithTitle(16.0, "蓝光")
+        mbpsList: List<VideoLevel> = listOf(
+            VideoLevel(1.92, "标清"),
+            VideoLevel(2.56, "高清"),
+            VideoLevel(8.0, "超清"),
+            VideoLevel(16.0, "蓝光")
         )
-    ): SpeedRangeWithTitle {
+    ): VideoLevel {
         mbpsList
             .sortedBy {
                 it.max
@@ -94,6 +94,6 @@ object DataUnit {
         return mbpsList.last()
     }
 
-    data class SpeedRangeWithTitle(val max: Double, val title: String)
+    data class VideoLevel(val max: Double, val title: String)
 }
 
