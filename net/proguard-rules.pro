@@ -20,5 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.alibaba.sdk.android.**{*;}
--keep class com.an.net.model.**{*;}
+-keep class com.an.net.wifi.model.**{*;}
 -keep class com.an.net.AliOssManager{*;}

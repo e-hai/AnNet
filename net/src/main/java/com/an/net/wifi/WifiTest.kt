@@ -1,18 +1,19 @@
-package com.an.net
+package com.an.net.wifi
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
-import com.alibaba.sdk.android.oss.*
+import com.alibaba.sdk.android.oss.ClientException
+import com.alibaba.sdk.android.oss.ServiceException
 import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback
-import com.alibaba.sdk.android.oss.common.OSSLog
-import com.alibaba.sdk.android.oss.common.auth.OSSCustomSignerCredentialProvider
-import com.alibaba.sdk.android.oss.common.utils.OSSUtils
 import com.alibaba.sdk.android.oss.internal.OSSAsyncTask
-import com.alibaba.sdk.android.oss.model.*
-import com.an.net.model.Configuration
-import com.an.net.model.SpeedResult
-import com.an.net.model.SpeedState
-import com.an.net.util.byteToMBit
+import com.alibaba.sdk.android.oss.model.PutObjectRequest
+import com.alibaba.sdk.android.oss.model.PutObjectResult
+import com.an.net.alioss.AliOssManager
+import com.an.net.alioss.Configuration
+import com.an.net.alioss.SpeedCallBack
+import com.an.net.wifi.model.SpeedResult
+import com.an.net.wifi.model.SpeedState
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -22,27 +23,20 @@ import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
 
+class WifiTest(context: Context) {
 
-object AliOssManager {
-
-    private const val TAG = "AliOssManager"
-    private lateinit var oss: OSS
-    private lateinit var conf: Configuration
-
-    fun init(context: Context, conf: Configuration) {
-        OSSLog.enableLog()
-        this.conf = conf
-        val endpoint = conf.endpoint
-        val credentialProvider = object : OSSCustomSignerCredentialProvider() {
-            override fun signContent(content: String?): String {
-                return OSSUtils.sign(conf.accessId, conf.accessSecret, content)
-            }
-        }
-        oss = OSSClient(context, endpoint, credentialProvider, null)
+    companion object {
+        const val TAG = "WifiTest"
     }
 
-
     private var uploadTask: OSSAsyncTask<PutObjectResult>? = null
+
+    private val ossManager = lazy {
+        AliOssManager(
+            context,
+            Configuration("", "", "", "", "")
+        )
+    }.value
 
     fun testUploadSpeed(
         context: Context,
@@ -52,32 +46,28 @@ object AliOssManager {
         duration: Long = 15 * 1000, //最长时间 ms
         callBack: SpeedCallBack
     ) {
-
         Log.d(TAG, "upload start ")
-
         val file = File("${context.cacheDir.absolutePath}-$fileSize-test_speed").apply {
             RandomAccessFile(absolutePath, "rw").setLength(fileSize)
         }
-
-        val put = PutObjectRequest(conf.bucketName, objectName, file.absolutePath)
         val startTime = System.currentTimeMillis()
         var lastTimeStamp = System.currentTimeMillis()
-        put.setProgressCallback { _, currentSize, totalSize ->
-            val nowTimeStamp = System.currentTimeMillis()
-            if (interval < (nowTimeStamp - lastTimeStamp)) {
-                val time = (nowTimeStamp - startTime).toDouble()
-                val speed = currentSize / time * 1000
-                lastTimeStamp = nowTimeStamp
-                callBack(SpeedResult(SpeedState.LOADING, speed))
-                Log.d(TAG, "upload current=$currentSize current=$totalSize fileSize=$speed")
-            }
+        ossManager.asyncPutObject(objectName, Uri.fromFile(file),
+            { _, currentSize, totalSize ->
+                val nowTimeStamp = System.currentTimeMillis()
+                if (interval < (nowTimeStamp - lastTimeStamp)) {
+                    val time = (nowTimeStamp - startTime).toDouble()
+                    val speed = currentSize / time * 1000
+                    lastTimeStamp = nowTimeStamp
+                    callBack(SpeedResult(SpeedState.LOADING, speed))
+                    Log.d(TAG, "upload current=$currentSize current=$totalSize fileSize=$speed")
+                }
 
-            if (duration < (nowTimeStamp - startTime)) {
-                uploadTask?.cancel()
-                Log.d(TAG, "upload time cancel")
-            }
-        }
-        uploadTask = oss.asyncPutObject(put,
+                if (duration < (nowTimeStamp - startTime)) {
+                    uploadTask?.cancel()
+                    Log.d(TAG, "upload time cancel")
+                }
+            },
             object : OSSCompletedCallback<PutObjectRequest, PutObjectResult> {
                 override fun onSuccess(request: PutObjectRequest?, result: PutObjectResult?) {
                     callBack(SpeedResult(SpeedState.SUCCESS))
@@ -92,7 +82,8 @@ object AliOssManager {
                     callBack(SpeedResult(SpeedState.FAIL))
                     Log.d(TAG, "upload fail")
                 }
-            })
+            }
+        )
     }
 
 
@@ -128,7 +119,6 @@ object AliOssManager {
                     lastTimeStamp = nowTimeStamp
                     callBack(SpeedResult(SpeedState.LOADING, speed))
                     Log.d(TAG, "download total=$totalBytes speed=$speed")
-
                 }
                 if (duration < (nowTimeStamp - startTime)) {
                     break
@@ -145,16 +135,4 @@ object AliOssManager {
         }
     }
 
-    fun delFile(objectName: String): DeleteObjectResult {
-        val del = DeleteObjectRequest(conf.bucketName, objectName)
-        return oss.deleteObject(del)
-    }
-
-    fun getFileUrl(objectName: String): String {
-        return conf.host + objectName
-    }
-
 }
-
-typealias SpeedCallBack = (SpeedResult) -> Unit
-

@@ -1,4 +1,4 @@
-package com.an.net.util
+package com.an.net.wifi.util
 
 
 fun Double.byteToKB(): Double {

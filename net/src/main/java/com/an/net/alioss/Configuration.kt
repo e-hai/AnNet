@@ -1,4 +1,4 @@
-package com.an.net.model
+package com.an.net.alioss
 
 data class Configuration(
     val endpoint: String,

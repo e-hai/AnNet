@@ -1,10 +1,8 @@
 package com.an.net
 
-import com.an.net.util.DataUnit
-import com.an.net.util.byteToMBit
+import com.an.net.wifi.util.DataUnit
+import com.an.net.wifi.util.byteToMBit
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).

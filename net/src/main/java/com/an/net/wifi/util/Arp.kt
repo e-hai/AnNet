@@ -1,4 +1,4 @@
-package com.an.net
+package com.an.net.wifi.util
 
 import android.os.Build
 import android.util.Log

@@ -1,4 +1,4 @@
-package com.an.net.model
+package com.an.net.wifi.model
 
 
 enum class SpeedState {
