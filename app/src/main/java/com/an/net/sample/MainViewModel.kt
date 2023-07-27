@@ -1,4 +1,4 @@
-package com.an.net
+package com.an.net.sample
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -70,30 +70,5 @@ object DataUnit {
         }
         return "大于${mbpsList.last()}M"
     }
-
-    /**
-     * @param mbps 字节每秒
-     * */
-    fun networkSpeedVideoLevel(
-        mbps: Double,
-        mbpsList: List<VideoLevel> = listOf(
-            VideoLevel(1.92, "标清"),
-            VideoLevel(2.56, "高清"),
-            VideoLevel(8.0, "超清"),
-            VideoLevel(16.0, "蓝光")
-        )
-    ): VideoLevel {
-        mbpsList
-            .sortedBy {
-                it.max
-            }.forEach {
-                if (mbps.compareTo(it.max) <= 0) {
-                    return it
-                }
-            }
-        return mbpsList.last()
-    }
-
-    data class VideoLevel(val max: Double, val title: String)
 }
 

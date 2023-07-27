@@ -1,7 +1,8 @@
-package com.an.net
+package com.an.net.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.an.net.R
 
 class MainActivity : AppCompatActivity() {
 
