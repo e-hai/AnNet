@@ -70,7 +70,6 @@ class RetrofitTest {
                 "url": "http://www.baidu.com"
             },
             {
-                "id": 3,
                 "url": "http://www.SoSo.com"
             }
         ]
